@@ -1,0 +1,561 @@
+{
+  "openapi": "3.0.0",
+  "info":{
+    "title": "Todo List RESTful API",
+    "description": "This is a sample server TodoListApp server.  You can find out more about this app at [my github page](https://github.com/bagustasuru). For this sample, you can use the JWT for authentication using `bearer token` to test the authorization filters.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Bagus Tasuru Nadhirin",
+      "email": "bagustasuru97@gmail.com",
+      "url": "https://www.instagram.com/bagustasuru/"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000/api/v1"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Todo List",
+      "description": "resource todolists API endpoint "
+    },
+    {
+      "name": "Tags",
+      "description": "resource tags API endpoint "
+    }
+  ],
+  "paths": {
+    "/todolist": {
+      "get": {
+        "tags": ["Todo List"],
+        "summary": "Get all todo list",
+        "description": "Get all active todo list",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/FilterByName"
+          },
+          {
+            "name": "isActive",
+            "in": "query",
+            "required": false,
+            "description": "Filter by status",
+            "schema": {
+              "type": "array",
+              "items": {
+                "default": "done",
+                "enum": [
+                  "done",
+                  "pending",
+                  "need_action"
+                ]
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Reponse successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TodoList"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Todo List"],
+        "security": [
+          {
+            "todoListAuth": []
+          }
+        ],
+        "summary": "Insert todolist",
+        "description": "Insert todolist data to database",
+        "requestBody": {
+          "required": true,
+          "$ref": "#/components/requestBodies/createOrUpdateTodoList"
+        },
+        "responses": {
+          "200": {
+            "description": "Request success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TodoList"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/requestNotFound"
+          }
+        }
+      }
+    },
+    "/todolist/{todolistId}/remove-tag": {
+      "post": {
+        "tags": ["Todo List"],
+        "security": [
+          {
+            "todoListAuth": []
+          }
+        ],
+        "summary": "Remove tag from todolist",
+        "description": "Remove some tag from todolist",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/TodoListId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/requestSuccess"
+          },
+          "404": {
+            "$ref": "#/components/responses/requestNotFound"
+          }
+        }
+      }
+    },
+    "/todolist/{todolistId}/add-tag": {
+      "post": {
+        "tags": ["Todo List"],
+        "security": [
+          {
+            "todoListAuth": []
+          }
+        ],
+        "summary": "Add tag to todolist",
+        "description": "Add some tag to todolist",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/TodoListId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/requestSuccess"
+          },
+          "404": {
+            "$ref": "#/components/responses/requestNotFound"
+          }
+        }
+      }
+    },
+    "/todolist/{todolistId}": {
+      "get": {
+        "tags": ["Todo List"],
+        "summary": "Todolist detail",
+        "description": "Get detail of todolist",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/TodoListId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Request success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TodoList"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/requestNotFound"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Todo List"],
+        "security": [
+          {
+            "todoListAuth": []
+          }
+        ],
+        "summary": "Delete todolist",
+        "description": "Delete todolist data from database",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/TodoListId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/requestSuccess"
+          },
+          "404": {
+            "$ref": "#/components/responses/requestNotFound"
+          }
+        }
+      },
+      "put": {
+        "tags": ["Todo List"],
+        "security": [
+          {
+            "todoListAuth": []
+          }
+        ],
+        "summary": "Update todolist",
+        "description": "Update todolist data",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/TodoListId"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/createOrUpdateTodoList"
+        },
+        "responses": {
+          "200": {
+            "description": "Request success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TodoList"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/requestNotFound"
+          }
+        }
+      }
+    },
+    "/tag": {
+      "get": {
+        "tags": ["Tags"],
+        "summary": "Get tag",
+        "description": "Get all tag records",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/FilterByName"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Request success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Tag"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/requestNotFound"
+          }
+        }
+      },
+      "post": {
+        "tags": ["Tags"],
+        "security": [
+          {
+            "todoListAuth": []
+          }
+        ],
+        "summary": "Add tag",
+        "description": "Add tag to database",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/createOrUpdateTag"
+        },
+        "responses": {
+          "200": {
+            "description": "Request success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tag"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/requestNotFound"
+          }
+        }
+      }
+    },
+    "/tag/{tagId}": {
+      "put": {
+        "tags": ["Tags"],
+        "security": [
+          {
+            "todoListAuth": []
+          }
+        ],
+        "summary": "Update tag",
+        "description": "UPdate data tag",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/TagId"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/createOrUpdateTag"
+        },
+        "responses": {
+          "200": {
+            "description": "Request success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TodoList"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/requestNotFound"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Tags"],
+        "security": [
+          {
+            "todoListAuth": []
+          }
+        ],
+        "summary": "Delete tag",
+        "description": "Delete tag data from database",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/TagId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/requestSuccess"
+          },
+          "404": {
+            "$ref": "#/components/responses/requestNotFound"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "TodoList": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "priority": {
+            "type": "number",
+            "format": "int32"
+          },
+          "status": {
+            "type": "string",
+            "description": "Status todolist",
+            "enum": [
+              "done",
+              "pending",
+              "need_action"
+            ]
+          },
+          "tag": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Tag"
+            }
+          }
+        }
+      },
+      "Tag": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "parameters": {
+      "FilterByName": {
+        "name": "name",
+        "in": "query",
+        "description": "Filter data by name",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "nullable": false,
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "examples": {
+          "java": {
+            "value": "Java",
+            "description": "Example query name for java"
+          },
+          "php": {
+            "value": "PHP",
+            "description": "Example query name for PHP"
+          }
+        }
+      },
+      "TodoListId": {
+        "name": "todolistId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        },
+        "description": "Id of todo list",
+        "examples": {
+          "123ddsda": {
+            "value": "123ddsda",
+            "description": "Id of todolist 1"
+          },
+          "123asd": {
+            "value": "123asd",
+            "description": "Id of todolist 2"
+          }
+        }
+      },
+      "TagId": {
+        "name": "tagId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        },
+        "description": "Id of tag",
+        "examples": {
+          "asd": {
+            "value": "asd",
+            "description": "Id of tag 1"
+          },
+          "qwe": {
+            "value": "qwe",
+            "description": "Id of tag 2"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "todoListAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "requestBodies": {
+      "createOrUpdateTodoList": {
+        "description": "Request body format",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "minLength": 3,
+                  "maxLength": 225
+                },
+                "priority": {
+                  "type": "number",
+                  "format": "int32",
+                  "default": 0
+                },
+                "status": {
+                  "type": "string",
+                  "default": "need_action",
+                  "enum": [
+                    "done", "pending", "need_action"
+                  ]
+                },
+                "tag_id": {
+                  "type": "array",
+                  "description": "Id of Tag",
+                  "minItems": 1,
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "createOrUpdateTag": {
+        "description": "Request body format",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "minLength": 3
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "requestSuccess": {
+        "description": "Request succesfully",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "success": {
+                    "type": "boolean"
+                  },
+                  "message": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+      },
+      "requestNotFound": {
+        "description": "Request not found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "default": false
+                },
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
