@@ -1,0 +1,51 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id    String  @id @default(uuid())
+  name  String? @db.VarChar(255)
+  email String  @unique @db.VarChar(255)
+}
+
+model Tags {
+  id            String          @id @default(uuid())
+  name          String?         @db.VarChar(255)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  TagOnTodolist TagOnTodolist[]
+}
+
+enum Status {
+  NEED_ACTION
+  PENDING
+  DONE
+}
+
+model Todolist {
+  id            String          @id @default(uuid())
+  name          String?         @db.VarChar(255)
+  priority      Int             @db.Int
+  status        Status          @default(NEED_ACTION)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  TagOnTodolist TagOnTodolist[]
+}
+
+model TagOnTodolist {
+  todoList   Todolist @relation(fields: [todoListId], references: [id])
+  todoListId String
+  tags       Tags     @relation(fields: [tagId], references: [id])
+  tagId      String
+  assignedAt DateTime @default(now())
+
+  @@id([todoListId, tagId])
+}
