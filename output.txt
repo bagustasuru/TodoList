@@ -1,0 +1,33 @@
+Teknik stream m
+erupakan salah 
+satu konsep fun
+damental yang m
+endukung aplika
+si Node.js beke
+rja. Teknik ini
+ dapat menangan
+i kasus baca tu
+lis berkas, kom
+unikasi jaringa
+n, atau beban k
+erja apapun aga
+r dapat berjala
+n dengan lebih 
+efisien. Sabar 
+dulu yah, kasus
+ yang disebutka
+n tadi terlalu 
+kompleks untuk 
+kita pelajari s
+ekarang. Untuk 
+memahami bagaim
+ana stream beke
+rja kita gunaka
+n kasus paling 
+sederhana, yakn
+i membaca teks 
+pada berkas sec
+ara bagian-per-
+bagian.
+null
+===============
